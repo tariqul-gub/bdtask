@@ -3,37 +3,101 @@
 @section('title', 'Financial Reports')
 
 @section('content')
-<div class="mb-4">
-    <h1 class="h2">Financial Reports - Account Balances</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">Financial Reports</h1>
 </div>
 
-<div class="card shadow-sm mb-3">
-    <div class="card-header bg-primary text-white">
-        <h5 class="mb-0">Report Filters</h5>
+<!-- Report Navigation -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <a href="{{ route('reports.index') }}" class="card shadow-sm text-decoration-none h-100 border-primary">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-chart-bar fa-2x text-primary mb-2"></i>
+                <h6 class="mb-0">Account Balances</h6>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="{{ route('reports.trial-balance') }}" class="card shadow-sm text-decoration-none h-100">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-scale-balanced fa-2x text-success mb-2"></i>
+                <h6 class="mb-0">Trial Balance</h6>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="{{ route('reports.income-statement') }}" class="card shadow-sm text-decoration-none h-100">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-file-invoice-dollar fa-2x text-info mb-2"></i>
+                <h6 class="mb-0">Income Statement</h6>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="{{ route('reports.balance-sheet') }}" class="card shadow-sm text-decoration-none h-100">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-building-columns fa-2x text-warning mb-2"></i>
+                <h6 class="mb-0">Balance Sheet</h6>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="{{ route('reports.ledger') }}" class="card shadow-sm text-decoration-none h-100">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-book fa-2x text-danger mb-2"></i>
+                <h6 class="mb-0">Account Ledger</h6>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- Filter Card -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fa-solid fa-filter me-2"></i>Filter Options</h5>
     </div>
     <div class="card-body">
-        <form action="{{ route('reports.index') }}" method="GET" class="row g-3">
-            <div class="col-md-4">
-                <label for="branch_id" class="form-label fw-bold">Branch/View</label>
-                <select class="form-select" id="branch_id" name="branch_id" onchange="this.form.submit()">
-                    <option value="consolidated" {{ $selectedBranch == 'consolidated' ? 'selected' : '' }}>
-                        📊 Consolidated View (All Branches)
-                    </option>
-                    @foreach($branches as $branch)
-                        <option value="{{ $branch->id }}" {{ $selectedBranch == $branch->id ? 'selected' : '' }}>
-                            🏢 {{ $branch->name }}
+        <form action="{{ route('reports.index') }}" method="GET">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Branch</label>
+                    <select class="form-select" name="branch_id">
+                        <option value="consolidated" {{ $selectedBranch == 'consolidated' ? 'selected' : '' }}>
+                            All Branches (Consolidated)
                         </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-8">
-                <label class="form-label fw-bold">Current Selection</label>
-                <div class="alert alert-info mb-0">
-                    @if($selectedBranch == 'consolidated')
-                        <i class="bi bi-info-circle"></i> Showing <strong>consolidated data</strong> from all branches
-                    @else
-                        <i class="bi bi-info-circle"></i> Showing data for branch: <strong>{{ $branches->find($selectedBranch)->name }}</strong>
-                    @endif
+                        @foreach($branches as $branch)
+                            <option value="{{ $branch->id }}" {{ $selectedBranch == $branch->id ? 'selected' : '' }}>
+                                {{ $branch->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Account Type</label>
+                    <select class="form-select" name="account_type">
+                        <option value="">All Types</option>
+                        <option value="Asset" {{ $accountType == 'Asset' ? 'selected' : '' }}>Asset</option>
+                        <option value="Liability" {{ $accountType == 'Liability' ? 'selected' : '' }}>Liability</option>
+                        <option value="Equity" {{ $accountType == 'Equity' ? 'selected' : '' }}>Equity</option>
+                        <option value="Revenue" {{ $accountType == 'Revenue' ? 'selected' : '' }}>Revenue</option>
+                        <option value="Expense" {{ $accountType == 'Expense' ? 'selected' : '' }}>Expense</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">From Date</label>
+                    <input type="date" class="form-control" name="from_date" value="{{ $fromDate }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">To Date</label>
+                    <input type="date" class="form-control" name="to_date" value="{{ $toDate }}">
+                </div>
+                <div class="col-md-3 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-magnifying-glass"></i> Filter
+                    </button>
+                    <a href="{{ route('reports.index') }}" class="btn btn-secondary">
+                        <i class="fa-solid fa-rotate"></i> Reset
+                    </a>
                 </div>
             </div>
         </form>

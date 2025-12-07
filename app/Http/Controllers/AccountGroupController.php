@@ -7,13 +7,26 @@ use Illuminate\Http\Request;
 
 class AccountGroupController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $accountGroups = AccountGroup::with('parent', 'children')
-            ->whereNull('parent_id')
-            ->get();
+        $query = AccountGroup::with(['parent', 'accounts'])->withCount('accounts');
         
-        return view('account-groups.index', compact('accountGroups'));
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+        
+        if ($request->filled('parent_id')) {
+            if ($request->parent_id === 'root') {
+                $query->whereNull('parent_id');
+            } else {
+                $query->where('parent_id', $request->parent_id);
+            }
+        }
+        
+        $accountGroups = $query->latest()->paginate(15)->withQueryString();
+        $parentGroups = AccountGroup::whereNull('parent_id')->get();
+        
+        return view('account-groups.index', compact('accountGroups', 'parentGroups'));
     }
 
     public function create()

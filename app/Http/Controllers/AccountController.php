@@ -8,10 +8,30 @@ use Illuminate\Http\Request;
 
 class AccountController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $accounts = Account::with('accountGroup')->latest()->paginate(20);
-        return view('accounts.index', compact('accounts'));
+        $query = Account::with('accountGroup');
+        
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('code', 'like', '%' . $request->search . '%');
+            });
+        }
+        
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+        
+        if ($request->filled('group_id')) {
+            $query->where('account_group_id', $request->group_id);
+        }
+        
+        $accounts = $query->orderBy('code')->paginate(20)->withQueryString();
+        $accountGroups = AccountGroup::all();
+        $accountTypes = ['Asset', 'Liability', 'Equity', 'Revenue', 'Expense'];
+        
+        return view('accounts.index', compact('accounts', 'accountGroups', 'accountTypes'));
     }
 
     public function create()

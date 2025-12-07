@@ -6,8 +6,27 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h2">Branches</h1>
     <a href="{{ route('branches.create') }}" class="btn btn-primary">
-        <i class="bi bi-plus-circle"></i> Create Branch
+        <i class="fa-solid fa-plus"></i> Create Branch
     </a>
+</div>
+
+<!-- Filter -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ route('branches.index') }}" class="row g-3">
+            <div class="col-md-10">
+                <input type="text" name="search" class="form-control" placeholder="Search by name..." value="{{ request('search') }}">
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+                <a href="{{ route('branches.index') }}" class="btn btn-secondary">
+                    <i class="fa-solid fa-rotate"></i>
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
 
 <div class="card shadow-sm">

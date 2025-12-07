@@ -10,13 +10,34 @@ use Illuminate\Http\Request;
 
 class JournalEntryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $journalEntries = JournalEntry::with('branch')
-            ->latest('entry_date')
-            ->paginate(15);
+        $query = JournalEntry::with('branch');
         
-        return view('journal-entries.index', compact('journalEntries'));
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+        
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        if ($request->filled('from_date')) {
+            $query->where('entry_date', '>=', $request->from_date);
+        }
+        
+        if ($request->filled('to_date')) {
+            $query->where('entry_date', '<=', $request->to_date);
+        }
+        
+        if ($request->filled('search')) {
+            $query->where('description', 'like', '%' . $request->search . '%');
+        }
+        
+        $journalEntries = $query->latest('entry_date')->paginate(15)->withQueryString();
+        $branches = Branch::all();
+        
+        return view('journal-entries.index', compact('journalEntries', 'branches'));
     }
 
     public function create()
